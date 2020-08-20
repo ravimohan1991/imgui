@@ -1392,9 +1392,9 @@ struct ImGuiContext
     bool                    FocusTabPressed;                    //
 
     // Range-Select/Multi-Select
-    bool                    MultiSelectEnabled;
+    ImGuiWindow*            MultiSelectEnabledWindow;           // FIXME-MULTISELECT: We currently don't support recursing/stacking multi-select
     ImGuiMultiSelectFlags   MultiSelectFlags;
-    ImGuiMultiSelectState   MultiSelectState;                   // We currently don't support recursing/stacking multi-select
+    ImGuiMultiSelectState   MultiSelectState;                   
     ImGuiKeyModFlags        MultiSelectKeyMods;
 
     // Render
@@ -1584,7 +1584,7 @@ struct ImGuiContext
         FocusRequestNextCounterRegular = FocusRequestNextCounterTabStop = INT_MAX;
         FocusTabPressed = false;
 
-        MultiSelectEnabled = false;
+        MultiSelectEnabledWindow = NULL;
         MultiSelectFlags = ImGuiMultiSelectFlags_None;
         MultiSelectKeyMods = ImGuiKeyModFlags_None;
 
