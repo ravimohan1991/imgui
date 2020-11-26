@@ -1359,7 +1359,6 @@ const char* ImStristr(const char* haystack, const char* haystack_end, const char
 
 const char* ImStrstr(ImStr haystack, ImStr needle)
 {
-    IM_IMSTR_ENSURE_HAS_END(needle);
     const char un0 = (char)*needle.Begin;
     while ((!haystack.End && *haystack.Begin) || (haystack.End && haystack.Begin < haystack.End))
     {
@@ -2082,8 +2081,7 @@ bool ImGuiTextFilter::PassFilter(ImStr text) const
     if (Filters.empty())
         return true;
 
-    IM_IMSTR_ENSURE_HAS_END(text);
-    if (text.Empty())
+    if (text.Empty()) // FIXME-IMSTR
         text.Begin = text.End = "";
 
     for (int i = 0; i != Filters.Size; i++)
@@ -2605,14 +2603,9 @@ void ImGui::RenderText(ImVec2 pos, ImStr text, bool hide_text_after_hash)
     // Hide anything after a '##' string
     const char* text_display_end;
     if (hide_text_after_hash)
-    {
         text_display_end = FindRenderedTextEnd(text);
-    }
     else
-    {
-        IM_IMSTR_ENSURE_HAS_END(text);
         text_display_end = text.End;
-    }
 
     if (text.Begin != text_display_end)
     {
@@ -2626,7 +2619,6 @@ void ImGui::RenderTextWrapped(ImVec2 pos, ImStr text, float wrap_width)
 {
     ImGuiContext& g = *GImGui;
     ImGuiWindow* window = g.CurrentWindow;
-    IM_IMSTR_ENSURE_HAS_END(text);
 
     if (text.Begin != text.End)
     {
@@ -2862,7 +2854,6 @@ ImGuiID ImGuiWindow::GetID(ImStr str)
     ImGui::KeepAliveID(id);
 #ifdef IMGUI_ENABLE_TEST_ENGINE
     ImGuiContext& g = *GImGui;
-    IM_IMSTR_ENSURE_HAS_END(str);
     IMGUI_TEST_ENGINE_ID_INFO2(id, ImGuiDataType_String, str.Begin, str.End);
 #endif
     return id;
@@ -2898,7 +2889,6 @@ ImGuiID ImGuiWindow::GetIDNoKeepAlive(ImStr str)
     ImGuiID id = ImHashStr(str, seed);
 #ifdef IMGUI_ENABLE_TEST_ENGINE
     ImGuiContext& g = *GImGui;
-    IM_IMSTR_ENSURE_HAS_END(str);
     IMGUI_TEST_ENGINE_ID_INFO2(id, ImGuiDataType_String, str.Begin, str.End);
 #endif
     return id;
@@ -4355,7 +4345,6 @@ ImVec2 ImGui::CalcTextSize(ImStr text, bool hide_text_after_double_hash, float w
 {
     ImGuiContext& g = *GImGui;
 
-    IM_IMSTR_ENSURE_HAS_END(text);
     if (hide_text_after_double_hash)
         text.End = FindRenderedTextEnd(text);      // Hide anything after a '##' string
 
