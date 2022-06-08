@@ -2,7 +2,6 @@
 project "ImGui"
 	kind "StaticLib"
 	language "C++"
-	staticruntime "on"
 
 	targetdir ("build/" .. outputdir .. "/%{prj.name}")
 	objdir ("obj/" .. outputdir .. "/%{prj.name}")
@@ -26,12 +25,14 @@ project "ImGui"
 	filter "system:windows"
 		systemversion "latest"
 		cppdialect "C++17"
+		staticruntime "off"
 
 	filter "system:linux"
 		-- https://github.com/premake/premake-core/wiki/pic
 		pic "On"
 		buildoptions "-std=c++11"
 		systemversion "latest"
+		staticruntime "off"
 
 	filter "configurations:Debug"
 		runtime "Debug"
