@@ -7,15 +7,19 @@
 
 # For adding multiple files
 file(GLOB ImGuiSource *.cpp)
+list(APPEND ImGuiHeaders imgui.h backends/imgui_impl_vulkan.h backends/imgui_impl_sdl.h)
+
+# For vulkan support
+list(APPEND ImGuiSource backends/imgui_impl_vulkan.cpp backends/imgui_impl_sdl.cpp)
 
 # Set the project name and version
 project(ImGui VERSION 1.0) # Versioning shall change to something more appropriate
 
 # Building the project (STATIC or DYNAMIC (SHARED))
 if (BUILD_SHARED_LIBS)
-    add_library(ImGui SHARED ${ImGuiSource})
+    add_library(ImGui SHARED ${ImGuiSource} ${ImGuiHeaders})
 else()
-    add_library(ImGui STATIC ${ImGuiSource})
+    add_library(ImGui STATIC ${ImGuiSource} ${ImGuiHeaders})
 endif()
 
 
