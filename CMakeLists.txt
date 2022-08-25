@@ -61,10 +61,12 @@ target_include_directories(ImGUI
 target_compile_definitions(ImGUI PUBLIC ImGUI)
 target_link_libraries(ImGUI PUBLIC ${Vulkan_LIBRARY})
 
+if(NOT MSVC)
 if (BUILD_SHARED_LIBS)
-   #target_link_libraries(ImGUI PUBLIC SDL2)
+   target_link_libraries(ImGUI PUBLIC SDL2)
 else()
-    #target_link_libraries(ImGUI PUBLIC SDL2-static)
+    target_link_libraries(ImGUI PUBLIC SDL2-static)
+endif()
 endif()
 
 #foreach(flag_var
