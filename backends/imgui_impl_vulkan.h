@@ -126,6 +126,14 @@ struct ImGui_ImplVulkanH_FrameSemaphores
     VkSemaphore         RenderCompleteSemaphore;
 };
 
+// Cowboy's selective hybrid magic
+struct ImGui_Vulkan_Frame_On_Flight
+{
+	VkFence             Fence;
+	VkSemaphore         ImageAcquiredSemaphore;
+	VkSemaphore         RenderCompleteSemaphore;
+};
+
 // Helper structure to hold the data needed by one rendering context into one OS window
 // (Used by example's main.cpp. Used by multi-viewport features. Probably NOT used by your own engine/app.)
 struct ImGui_ImplVulkanH_Window
@@ -143,8 +151,12 @@ struct ImGui_ImplVulkanH_Window
     uint32_t            FrameIndex;             // Current frame being rendered to (0 <= FrameIndex < FrameInFlightCount)
     uint32_t            ImageCount;             // Number of simultaneous in-flight frames (returned by vkGetSwapchainImagesKHR, usually derived from min_image_count)
     uint32_t            SemaphoreIndex;         // Current set of swapchain wait semaphores we're using (needs to be distinct from per frame data)
-    ImGui_ImplVulkanH_Frame*            Frames;
-    ImGui_ImplVulkanH_FrameSemaphores*  FrameSemaphores;
+    ImGui_ImplVulkanH_Frame*            Frames; // Cowboy's Note: Not the regular frame sense. Just a container for buffers and all those sizes depending on  VulkanHolder::GetVulkanContext()->GetSwapChainImages().size();
+    ImGui_ImplVulkanH_FrameSemaphores*  FrameSemaphores; // Cowboy's Note: Redundant now
+
+    // Cowboy's Modification
+    ImGui_Vulkan_Frame_On_Flight*       FramesOnFlight; // The syncronicity data for in-flight frames
+    VkRect2D                            RenderArea;
 
     ImGui_ImplVulkanH_Window()
     {
