@@ -7,7 +7,7 @@
 
 # For adding multiple files
 file(GLOB ImGuiSource *.cpp)
-list(APPEND ImGuiHeaders imgui.h backends/imgui_impl_vulkan.h backends/imgui_impl_sdl.h)
+list(APPEND ImGuiHeaders imgui.h backends/imgui_impl_vulkan.h backends/imgui_impl_sdl.h imgui_internal.h)
 
 # For vulkan support
 list(APPEND ImGuiSource backends/imgui_impl_vulkan.cpp backends/imgui_impl_sdl.cpp)

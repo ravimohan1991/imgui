@@ -61,6 +61,7 @@ Index of this file:
 #include <stdarg.h>                 // va_list, va_start, va_end
 #include <stddef.h>                 // ptrdiff_t, NULL
 #include <string.h>                 // memset, memmove, memcpy, strlen, strchr, strcpy, strcmp
+//#include "imgui_internal.h"
 
 // Version
 // (Integer encoded as XYYZZ for use in #if preprocessor conditionals. Work in progress versions typically starts at XYY99 then bounce up to XYY00, XYY01 etc. when release tagging happens)
@@ -133,6 +134,8 @@ Index of this file:
 //-----------------------------------------------------------------------------
 
 // Forward declarations
+struct ImGuiWindow;
+struct ImGuiDockNode;
 struct ImDrawChannel;               // Temporary storage to output draw commands out of order, used by ImDrawListSplitter and ImDrawList::ChannelsSplit()
 struct ImDrawCmd;                   // A single draw command within a parent ImDrawList (generally maps to 1 GPU draw call, unless it is a callback)
 struct ImDrawData;                  // All draw command lists required to render the frame + pos/size coordinates to use for the projection matrix.
@@ -282,6 +285,8 @@ IM_MSVC_RUNTIME_CHECKS_RESTORE
 
 namespace ImGui
 {
+	//IMGUI_API struct ImGuiDockNode;
+	//static ImGuiDockNode*   DockNodeTreeFindVisibleNodeByPos(ImGuiDockNode* node, ImVec2 pos);
     // Context creation and access
     // - Each context create its own ImFontAtlas by default. You may instance one yourself and pass it to CreateContext() to share a font atlas between contexts.
     // - DLL users: heaps and globals are not shared across DLL boundaries! You will need to call SetCurrentContext() + SetAllocatorFunctions()
@@ -328,7 +333,7 @@ namespace ImGui
     //    BeginPopup/EndPopup, etc. where the EndXXX call should only be called if the corresponding BeginXXX function
     //    returned true. Begin and BeginChild are the only odd ones out. Will be fixed in a future update.]
     // - Note that the bottom of window stack always contains a window called "Debug".
-    IMGUI_API bool          Begin(const char* name, bool* p_open = NULL, ImGuiWindowFlags flags = 0);
+    IMGUI_API bool          Begin(const char* name, bool* p_open = NULL, ImGuiWindowFlags flags = 0, ImGuiWindow** theWindow = nullptr);
     IMGUI_API void          End();
 
     // Child Windows
@@ -895,7 +900,6 @@ namespace ImGui
     IMGUI_API ImGuiStorage* GetStateStorage();
     IMGUI_API bool          BeginChildFrame(ImGuiID id, const ImVec2& size, ImGuiWindowFlags flags = 0); // helper to create a child window / scrolling region that looks like a normal widget frame
     IMGUI_API void          EndChildFrame();                                                    // always call EndChildFrame() regardless of BeginChildFrame() return values (which indicates a collapsed/clipped window)
-
     // Text Utilities
     IMGUI_API ImVec2        CalcTextSize(const char* text, const char* text_end = NULL, bool hide_text_after_double_hash = false, float wrap_width = -1.0f);
 

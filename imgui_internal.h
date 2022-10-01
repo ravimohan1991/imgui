@@ -110,6 +110,7 @@ Index of this file:
 // [SECTION] Forward declarations
 //-----------------------------------------------------------------------------
 
+struct ImGuiDockPreviewData;
 struct ImBitVector;                 // Store 1-bit per value
 struct ImRect;                      // An axis-aligned rectangle (2 points)
 struct ImDrawDataBuilder;           // Helper to build a ImDrawData instance
@@ -219,7 +220,7 @@ namespace ImStb
 #define IMGUI_DEBUG_LOG_POPUP(...)      do { if (g.DebugLogFlags & ImGuiDebugLogFlags_EventPopup)    IMGUI_DEBUG_LOG(__VA_ARGS__); } while (0)
 #define IMGUI_DEBUG_LOG_NAV(...)        do { if (g.DebugLogFlags & ImGuiDebugLogFlags_EventNav)      IMGUI_DEBUG_LOG(__VA_ARGS__); } while (0)
 #define IMGUI_DEBUG_LOG_IO(...)         do { if (g.DebugLogFlags & ImGuiDebugLogFlags_EventIO)       IMGUI_DEBUG_LOG(__VA_ARGS__); } while (0)
-#define IMGUI_DEBUG_LOG_DOCKING(...)    do { if (g.DebugLogFlags & ImGuiDebugLogFlags_EventDocking)  IMGUI_DEBUG_LOG(__VA_ARGS__); } while (0)
+#define IMGUI_DEBUG_LOG_DOCKING(...)    do { if (g.DebugLogFlags & ImGuiDebugLogFlags_EventIO)  IMGUI_DEBUG_LOG(__VA_ARGS__); } while (0)
 #define IMGUI_DEBUG_LOG_VIEWPORT(...)   do { if (g.DebugLogFlags & ImGuiDebugLogFlags_EventViewport) IMGUI_DEBUG_LOG(__VA_ARGS__); } while (0)
 
 // Static Asserts
@@ -1516,7 +1517,7 @@ struct IMGUI_API ImGuiDockNode
     ImGuiWindowClass        WindowClass;                // [Root node only]
     ImU32                   LastBgColor;
 
-    ImGuiWindow*            HostWindow;
+    ImGuiWindow*            HostWindow;                 // The ImGui window hosting the node
     ImGuiWindow*            VisibleWindow;              // Generally point to window which is ID is == SelectedTabID, but when CTRL+Tabbing this can be a different window.
     ImGuiDockNode*          CentralNode;                // [Root node only] Pointer to central node.
     ImGuiDockNode*          OnlyNodeWithWindows;        // [Root node only] Set when there is a single visible node within the hierarchy.
@@ -2373,6 +2374,8 @@ struct IMGUI_API ImGuiWindow
     bool                    DockNodeIsVisible   :1;
     bool                    DockTabIsVisible    :1;             // Is our window visible this frame? ~~ is the corresponding tab selected?
     bool                    DockTabWantClose    :1;
+	bool                    bIsCodeDocked = false;              // For in-code docking purpose. Not completely reverse engineered yet.
+	bool                    bAutoFit = true;                    // Little away from the standard?
     short                   DockOrder;                          // Order of the last time the window was visible within its DockNode. This is used to reorder windows that are reappearing on the same frame. Same value between windows that were active and windows that were none are possible.
     ImGuiWindowDockStyle    DockStyle;
     ImGuiDockNode*          DockNode;                           // Which node are we docked into. Important: Prefer testing DockIsActive in many cases as this will still be set when the dock node is hidden.
@@ -2984,6 +2987,11 @@ namespace ImGui
     IMGUI_API void          BeginDocked(ImGuiWindow* window, bool* p_open);
     IMGUI_API void          BeginDockableDragDropSource(ImGuiWindow* window);
     IMGUI_API void          BeginDockableDragDropTarget(ImGuiWindow* window);
+    IMGUI_API void          QueueDockingRequest(ImGuiID dockSpaceID, ImGuiWindow* payload_window, uint32_t supportNumber);
+    IMGUI_API ImGuiDockNode*          FindAppropriateNode(ImGuiWindow* window, ImGuiWindow* payload_window, int& boxNumber);
+    IMGUI_API void          FinalTrimming(ImGuiWindow* host_window, ImGuiDockNode* host_node, ImGuiWindow* root_payload, const ImGuiDockPreviewData* data);
+    IMGUI_API ImGuiDockNode* DockNodeTreeFindVisibleNodeByPosNumb(ImGuiDockNode* node, ImVec2 pos);
+    IMGUI_API ImGuiWindow*  FindDockSpaceByID(ImGuiID dockID);
     IMGUI_API void          SetWindowDock(ImGuiWindow* window, ImGuiID dock_id, ImGuiCond cond);
 
     // Docking - Builder function needs to be generally called before the node is used/submitted.
